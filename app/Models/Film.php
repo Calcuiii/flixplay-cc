@@ -25,40 +25,13 @@ class Film extends Model
     ];
 
     protected $casts = [
-        'release_year' => 'integer',
-        'duration' => 'integer',
-        'rating' => 'float',
         'is_featured' => 'boolean',
-        'deleted_at' => 'datetime',
+        'rating' => 'float',
     ];
 
-    // Relationship dengan Genre
+    // Relationship
     public function genre()
     {
         return $this->belongsTo(Genre::class);
-    }
-
-    // Relationship dengan Ratings
-    public function ratings()
-    {
-        return $this->hasMany(Rating::class);
-    }
-
-    // Relationship dengan Reviews
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
-    }
-
-    // Relationship dengan OrderItems
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
-
-    // Get average rating
-    public function getAverageRating()
-    {
-        return $this->ratings()->avg('rating') ?? 0;
     }
 }

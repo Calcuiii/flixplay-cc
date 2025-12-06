@@ -14,7 +14,7 @@ class Genre extends Model
         'description',
     ];
 
-    // Relationship dengan Films
+    // Relationship
     public function films()
     {
         return $this->hasMany(Film::class);
