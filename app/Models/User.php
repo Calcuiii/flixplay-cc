@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'subscription_status',
+        'premium_expires_at',
     ];
 
     /**
@@ -42,7 +44,34 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'premium_expires_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
+    public function isPremium(): bool
+    {
+        if ($this->subscription_status === 'premium' && $this->premium_expires_at) {
+            return $this->premium_expires_at->isFuture();
+        }
+        return false;
+    }
+
+    // Relationship dengan orders
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    // Relationship dengan ratings
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    // Relationship dengan reviews
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }
+
