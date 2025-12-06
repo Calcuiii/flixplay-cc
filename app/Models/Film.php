@@ -34,4 +34,8 @@ class Film extends Model
     {
         return $this->belongsTo(Genre::class);
     }
+    public function watchHistory()
+    {
+        return $this->hasMany(WatchHistory::class);
+    }
 }
