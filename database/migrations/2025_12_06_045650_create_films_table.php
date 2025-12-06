@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->foreignId('genre_id')->constrained('genres')->onDelete('set null');
+            $table->foreignId('genre_id')->nullable()->constrained('genres')->onDelete('set null');
             $table->integer('duration')->comment('duration in minutes');
             $table->year('release_year');
             $table->string('director')->nullable();
