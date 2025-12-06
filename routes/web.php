@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\WatchHistoryController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminFilmController;
+use App\Http\Controllers\Admin\AdminGenreController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -56,3 +59,9 @@ Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('pay
 Route::get('/subscription/success', [PaymentController::class, 'success'])->name('subscription.success');
 Route::get('/subscription/failed', [PaymentController::class, 'failed'])->name('subscription.failed');
 Route::get('/subscription/pending', [PaymentController::class, 'pending'])->name('subscription.pending');
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('/films', AdminFilmController::class);
+    Route::resource('/genres', AdminGenreController::class);
+});

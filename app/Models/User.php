@@ -75,4 +75,9 @@ class User extends Authenticatable
 
         return 'expired';
     }
+
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
 }
