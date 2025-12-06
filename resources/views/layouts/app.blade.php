@@ -396,8 +396,12 @@
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <a href="{{ route('dashboard') }}" style="color: #e5e5e5; text-decoration: none; font-size: 14px; transition: all 0.3s;" onmouseover="this.style.color='#e94b3c'" onmouseout="this.style.color='#e5e5e5'">Dashboard</a>
                     
-                    <!-- TAMBAH INI -->
                     <a href="{{ route('watch-history.index') }}" style="color: #e5e5e5; text-decoration: none; font-size: 14px; transition: all 0.3s;" onmouseover="this.style.color='#e94b3c'" onmouseout="this.style.color='#e5e5e5'">Riwayat</a>
+                    
+                    <!-- ADMIN LINK -->
+                    @if(auth()->user()->is_admin)
+                        <a href="{{ route('admin.dashboard') }}" style="color: #e5e5e5; text-decoration: none; font-size: 14px; transition: all 0.3s;" onmouseover="this.style.color='#e94b3c'" onmouseout="this.style.color='#e5e5e5'">⚙️ Admin</a>
+                    @endif
                     
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf
@@ -417,6 +421,7 @@
     <main>
         @yield('content')
     </main>
+
 
     <!-- ============ FOOTER ============ -->
     <footer id="contact">
