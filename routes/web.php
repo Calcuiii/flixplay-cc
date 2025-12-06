@@ -6,6 +6,9 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\WatchHistoryController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -26,3 +29,30 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::post('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
 });
+// Protected Routes - PERLU LOGIN
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::post('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
+    
+    // Watch film
+    Route::post('/films/{film}/watch', [FilmController::class, 'watch'])->name('films.watch');
+    
+    // Subscription routes
+    Route::get('/subscription/plans', [SubscriptionController::class, 'plans'])->name('subscription.plans');
+    Route::get('/subscription/{plan}/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    Route::post('/subscription/{plan}/process', [PaymentController::class, 'process'])->name('payment.process');
+
+    Route::get('/watch-history', [WatchHistoryController::class, 'index'])->name('watch-history.index');
+    Route::post('/watch-history/clear', [WatchHistoryController::class, 'clear'])->name('watch-history.clear');
+});
+
+// Payment callback
+Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+Route::get('/payment/finish', [PaymentController::class, 'finish'])->name('payment.finish');
+Route::get('/payment/error', [PaymentController::class, 'error'])->name('payment.error');
+Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending');
+Route::get('/subscription/success', [PaymentController::class, 'success'])->name('subscription.success');
+Route::get('/subscription/failed', [PaymentController::class, 'failed'])->name('subscription.failed');
+Route::get('/subscription/pending', [PaymentController::class, 'pending'])->name('subscription.pending');

@@ -28,7 +28,7 @@
         <div style="background: linear-gradient(135deg, #1a1a3e, #0f1a2e); padding: 25px; border-radius: 12px; border: 1px solid rgba(233, 75, 60, 0.2);">
             <h3 style="background: linear-gradient(135deg, #e94b3c, #00d4d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 15px;">Status Langganan</h3>
             <p style="color: #b0b0b0; margin: 10px 0;">
-                @if(auth()->user()->subscription_type)
+                @if(auth()->user()->isSubscribed())
                     💎 {{ ucfirst(auth()->user()->subscription_type) }}
                 @else
                     🔓 Gratis
@@ -41,7 +41,7 @@
                     Belum berlangganan
                 @endif
             </p>
-            <a href="#" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, #00d4d4, #00a8a8); color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Upgrade Langganan</a>
+            <a href="{{ route('subscription.plans') }}" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, #00d4d4, #00a8a8); color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Upgrade Langganan</a>
         </div>
 
         <!-- Logout Card -->

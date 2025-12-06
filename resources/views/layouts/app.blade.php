@@ -395,13 +395,17 @@
             @auth
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <a href="{{ route('dashboard') }}" style="color: #e5e5e5; text-decoration: none; font-size: 14px; transition: all 0.3s;" onmouseover="this.style.color='#e94b3c'" onmouseout="this.style.color='#e5e5e5'">Dashboard</a>
+                    
+                    <!-- TAMBAH INI -->
+                    <a href="{{ route('watch-history.index') }}" style="color: #e5e5e5; text-decoration: none; font-size: 14px; transition: all 0.3s;" onmouseover="this.style.color='#e94b3c'" onmouseout="this.style.color='#e5e5e5'">Riwayat</a>
+                    
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf
                         <button type="submit" style="background: linear-gradient(135deg, #e94b3c, #d63a2a); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 12px;">Logout</button>
                     </form>
                 </div>
             @else
-                <div class="profile-icon" style="display: flex; gap: 10px; width: auto; background: none; border-radius: 0; box-shadow: none;">
+                <div style="display: flex; gap: 10px; width: auto;">
                     <a href="{{ route('login') }}" style="padding: 10px 20px; background: linear-gradient(135deg, #00d4d4, #00a8a8); color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 13px; display: inline-block;">Login</a>
                     <a href="{{ route('register') }}" style="padding: 10px 20px; background: linear-gradient(135deg, #e94b3c, #d63a2a); color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 13px; display: inline-block;">Register</a>
                 </div>

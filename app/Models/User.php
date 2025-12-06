@@ -10,11 +10,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -23,31 +18,48 @@ class User extends Authenticatable
         'subscription_expires_at',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'subscription_expires_at' => 'datetime',
     ];
 
-    /**
-     * Check if user is subscribed
-     */
+    public function watchHistory()
+    {
+        return $this->hasMany(WatchHistory::class);
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function activeSubscription()
+    {
+        return $this->subscriptions()
+            ->where('status', 'completed')
+            ->where('expires_at', '>', now())
+            ->first();
+    }
+
+    public function hasWatched($filmId)
+    {
+        return $this->watchHistory()->where('film_id', $filmId)->exists();
+    }
+
     public function isSubscribed()
     {
+        // Check dari tabel subscriptions (lebih akurat)
+        $active = $this->activeSubscription();
+        if ($active) {
+            return true;
+        }
+
+        // Fallback ke subscription_expires_at
         if (!$this->subscription_expires_at) {
             return false;
         }
@@ -55,9 +67,6 @@ class User extends Authenticatable
         return $this->subscription_expires_at->isFuture();
     }
 
-    /**
-     * Get subscription status
-     */
     public function getSubscriptionStatusAttribute()
     {
         if ($this->isSubscribed()) {
