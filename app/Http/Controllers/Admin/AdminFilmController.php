@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -12,8 +11,9 @@ class AdminFilmController extends Controller
     public function index()
     {
         $films = Film::with('genre')
+            ->latest()
             ->paginate(15);
-
+        
         return view('admin.films.index', compact('films'));
     }
 
@@ -26,28 +26,34 @@ class AdminFilmController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'title' => 'required|string|max:255|min:3',
+            'description' => 'required|string|min:10',
             'genre_id' => 'required|exists:genres,id',
-            'duration' => 'required|integer|min:1',
-            'release_year' => 'required|integer|min:1900',
+            'release_year' => 'required|integer|min:1900|max:' . date('Y'),
+            'duration' => 'required|integer|min:1|max:600',
             'director' => 'required|string|max:255',
-            'poster_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'poster_url' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'video_url' => 'nullable|url',
             'rating' => 'nullable|numeric|min:0|max:10',
             'status' => 'required|in:draft,published,archived',
         ]);
 
-        // Handle image upload
+        // ✅ Handle poster upload
         if ($request->hasFile('poster_url')) {
             $file = $request->file('poster_url');
             $path = $file->store('posters', 'public');
             $validated['poster_url'] = '/storage/' . $path;
         }
 
+        // ✅ Handle checkboxes
+        $validated['is_featured'] = $request->has('is_featured');
+        $validated['is_trending'] = $request->has('is_trending');
+        $validated['is_popular'] = $request->has('is_popular');
+
         Film::create($validated);
 
-        return redirect()->route('admin.films.index')->with('success', 'Film berhasil ditambahkan');
+        return redirect()->route('admin.films.index')
+            ->with('success', 'Film berhasil ditambahkan');
     }
 
     public function edit(Film $film)
@@ -59,11 +65,11 @@ class AdminFilmController extends Controller
     public function update(Request $request, Film $film)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'title' => 'required|string|max:255|min:3',
+            'description' => 'required|string|min:10',
             'genre_id' => 'required|exists:genres,id',
-            'duration' => 'required|integer|min:1',
-            'release_year' => 'required|integer|min:1900',
+            'duration' => 'required|integer|min:1|max:600',
+            'release_year' => 'required|integer|min:1900|max:' . date('Y'),
             'director' => 'required|string|max:255',
             'poster_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'video_url' => 'nullable|url',
@@ -71,20 +77,42 @@ class AdminFilmController extends Controller
             'status' => 'required|in:draft,published,archived',
         ]);
 
+        // ✅ Handle poster upload (jika ada file baru)
         if ($request->hasFile('poster_url')) {
+            // Hapus poster lama jika ada
+            if ($film->poster_url && file_exists(public_path($film->poster_url))) {
+                unlink(public_path($film->poster_url));
+            }
+            
             $file = $request->file('poster_url');
             $path = $file->store('posters', 'public');
             $validated['poster_url'] = '/storage/' . $path;
+        } else {
+            // Jangan update poster_url jika tidak ada file baru
+            unset($validated['poster_url']);
         }
+
+        // ✅ Handle checkboxes
+        $validated['is_featured'] = $request->has('is_featured');
+        $validated['is_trending'] = $request->has('is_trending');
+        $validated['is_popular'] = $request->has('is_popular');
 
         $film->update($validated);
 
-        return redirect()->route('admin.films.index')->with('success', 'Film berhasil diperbarui');
+        return redirect()->route('admin.films.index')
+            ->with('success', 'Film berhasil diperbarui');
     }
 
     public function destroy(Film $film)
     {
+        // ✅ Hapus file poster saat hapus film
+        if ($film->poster_url && file_exists(public_path($film->poster_url))) {
+            unlink(public_path($film->poster_url));
+        }
+
         $film->delete();
-        return redirect()->route('admin.films.index')->with('success', 'Film berhasil dihapus');
+
+        return redirect()->route('admin.films.index')
+            ->with('success', 'Film berhasil dihapus');
     }
 }

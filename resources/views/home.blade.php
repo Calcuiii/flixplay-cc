@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('title', 'Home')
-
 @section('content')
 <!-- ============ HERO SECTION ============ -->
 <section class="hero" id="home">
@@ -18,13 +16,16 @@
             <h1>Sore : Istri dari Masa Depan</h1>
             <p>Film Sore: Istri dari Masa Depan menceritakan kisah cinta lintas waktu tentang Sore, seorang wanita dari masa depan, yang datang ke masa lalu untuk mengubah kebiasaan suaminya, Jonathan, agar terhindar dari takdir buruk</p>
         @endif
+        
         <div class="hero-buttons">
             @if($featuredFilms->first())
                 <a href="{{ route('films.show', $featuredFilms->first()) }}" class="btn-watch" style="text-decoration: none;">
                     <i class="bi bi-play-fill"></i> Tonton Sekarang
                 </a>
             @else
-                <button class="btn-watch"><i class="bi bi-play-fill"></i> Tonton Sekarang</button>
+                <a href="{{ route('films.index') }}" class="btn-watch" style="text-decoration: none;">
+                    <i class="bi bi-play-fill"></i> Jelajahi Film
+                </a>
             @endif
             <button class="btn-info"><i class="bi bi-info-circle"></i> Informasi Lebih Lanjut</button>
         </div>
@@ -42,7 +43,9 @@
                     <div class="movie-title">{{ $film->title }}</div>
                     <div class="movie-rating">⭐ {{ number_format($film->rating, 1) }}/10</div>
                     <div class="movie-actions">
-                        <button class="icon-btn"><i class="bi bi-play-fill"></i></button>
+                        <a href="{{ route('films.show', $film) }}" class="icon-btn" style="text-decoration: none;">
+                            <i class="bi bi-play-fill"></i>
+                        </a>
                         <button class="icon-btn"><i class="bi bi-plus"></i></button>
                         <button class="icon-btn"><i class="bi bi-hand-thumbs-up"></i></button>
                     </div>
@@ -77,7 +80,9 @@
                     <div class="movie-title">{{ $film->title }}</div>
                     <div class="movie-rating">⭐ {{ number_format($film->rating, 1) }}/10</div>
                     <div class="movie-actions">
-                        <button class="icon-btn"><i class="bi bi-play-fill"></i></button>
+                        <a href="{{ route('films.show', $film) }}" class="icon-btn" style="text-decoration: none;">
+                            <i class="bi bi-play-fill"></i>
+                        </a>
                         <button class="icon-btn"><i class="bi bi-plus"></i></button>
                         <button class="icon-btn"><i class="bi bi-hand-thumbs-up"></i></button>
                     </div>

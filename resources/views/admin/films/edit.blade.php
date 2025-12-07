@@ -1,73 +1,113 @@
 @extends('admin.layout')
-
 @section('page-title', 'Edit Film: ' . $film->title)
-
 @section('content')
 <form action="{{ route('admin.films.update', $film) }}" method="POST" enctype="multipart/form-data" style="max-width: 600px;">
     @csrf
     @method('PUT')
-
+    
     <div class="form-group">
         <label>Judul Film</label>
-        <input type="text" name="title" value="{{ $film->title }}" required>
+        <input type="text" name="title" value="{{ old('title', $film->title) }}" required>
+        @error('title') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-
+    
     <div class="form-group">
         <label>Deskripsi</label>
-        <textarea name="description" required>{{ $film->description }}</textarea>
+        <textarea name="description" required>{{ old('description', $film->description) }}</textarea>
+        @error('description') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-
+    
     <div class="form-group">
         <label>Genre</label>
         <select name="genre_id" required>
             @foreach($genres as $genre)
-                <option value="{{ $genre->id }}" {{ $film->genre_id == $genre->id ? 'selected' : '' }}>
+                <option value="{{ $genre->id }}" {{ old('genre_id', $film->genre_id) == $genre->id ? 'selected' : '' }}>
                     {{ $genre->name }}
                 </option>
             @endforeach
         </select>
+        @error('genre_id') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-
+    
     <div class="form-group">
         <label>Durasi (menit)</label>
-        <input type="number" name="duration" value="{{ $film->duration }}" required>
+        <input type="number" name="duration" value="{{ old('duration', $film->duration) }}" required>
+        @error('duration') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-
+    
     <div class="form-group">
         <label>Tahun Rilis</label>
-        <input type="number" name="release_year" value="{{ $film->release_year }}" required>
+        <input type="number" name="release_year" value="{{ old('release_year', $film->release_year) }}" required>
+        @error('release_year') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-
+    
     <div class="form-group">
         <label>Direktur</label>
-        <input type="text" name="director" value="{{ $film->director }}" required>
+        <input type="text" name="director" value="{{ old('director', $film->director) }}" required>
+        @error('director') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-
+    
     <div class="form-group">
         <label>Poster Image</label>
+        @if($film->poster_url)
+            <div style="margin-bottom: 10px;">
+                <img src="{{ asset($film->poster_url) }}" alt="Current Poster" style="max-width: 200px; border-radius: 8px;">
+            </div>
+        @endif
         <input type="file" name="poster_url" accept="image/*">
         <small style="color: #b0b0b0;">Kosongkan jika tidak ingin mengubah</small>
+        @error('poster_url') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-
+    
     <div class="form-group">
         <label>URL Video</label>
-        <input type="url" name="video_url" value="{{ $film->video_url }}">
+        <input type="url" name="video_url" value="{{ old('video_url', $film->video_url) }}">
+        @error('video_url') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-
+    
     <div class="form-group">
         <label>Rating (0-10)</label>
-        <input type="number" name="rating" value="{{ $film->rating }}" min="0" max="10" step="0.1">
+        <input type="number" name="rating" value="{{ old('rating', $film->rating) }}" min="0" max="10" step="0.1">
+        @error('rating') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-
+    
     <div class="form-group">
         <label>Status</label>
         <select name="status" required>
-            <option value="draft" {{ $film->status == 'draft' ? 'selected' : '' }}>Draft</option>
-            <option value="published" {{ $film->status == 'published' ? 'selected' : '' }}>Published</option>
-            <option value="archived" {{ $film->status == 'archived' ? 'selected' : '' }}>Archived</option>
+            <option value="draft" {{ old('status', $film->status) == 'draft' ? 'selected' : '' }}>Draft</option>
+            <option value="published" {{ old('status', $film->status) == 'published' ? 'selected' : '' }}>Published</option>
+            <option value="archived" {{ old('status', $film->status) == 'archived' ? 'selected' : '' }}>Archived</option>
         </select>
+        @error('status') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-
+    
+    <!-- ✅ CHECKBOX: Featured -->
+    <div class="form-group">
+        <label>
+            <input type="checkbox" name="is_featured" value="1" 
+                {{ old('is_featured', $film->is_featured) ? 'checked' : '' }}>
+            Film Pilihan Editor
+        </label>
+    </div>
+    
+    <!-- ✅ CHECKBOX: Trending -->
+    <div class="form-group">
+        <label>
+            <input type="checkbox" name="is_trending" value="1" 
+                {{ old('is_trending', $film->is_trending) ? 'checked' : '' }}>
+            Film Trending
+        </label>
+    </div>
+    
+    <!-- ✅ CHECKBOX: Popular -->
+    <div class="form-group">
+        <label>
+            <input type="checkbox" name="is_popular" value="1" 
+                {{ old('is_popular', $film->is_popular) ? 'checked' : '' }}>
+            Film Populer
+        </label>
+    </div>
+    
     <div style="display: flex; gap: 10px;">
         <button type="submit" class="btn btn-primary">
             💾 Update
