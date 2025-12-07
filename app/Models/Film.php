@@ -22,6 +22,8 @@ class Film extends Model
         'rating',
         'is_featured',
         'status',
+        'is_trending',  
+        'is_popular',     
     ];
 
     protected $casts = [

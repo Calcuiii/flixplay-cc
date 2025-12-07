@@ -12,6 +12,7 @@ use App\Http\Controllers\WatchHistoryController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminFilmController;
 use App\Http\Controllers\Admin\AdminGenreController;
+use App\Http\Controllers\ContactController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -65,3 +66,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('/films', AdminFilmController::class);
     Route::resource('/genres', AdminGenreController::class);
 });
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');

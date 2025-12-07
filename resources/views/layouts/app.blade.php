@@ -45,6 +45,7 @@
             display: flex;
             gap: 30px;
             list-style: none;
+            align-items: center;
         }
         .nav-links a {
             color: #e5e5e5;
@@ -357,6 +358,7 @@
         @media (max-width: 768px) {
             nav {
                 padding: 15px 20px;
+                flex-wrap: wrap;
             }
             .nav-links {
                 gap: 15px;
@@ -386,7 +388,7 @@
         <ul class="nav-links">
             <li><a href="{{ route('home') }}">Home</a></li>
             <li><a href="{{ route('films.index') }}">Films</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="{{ route('contact') }}">Contact</a></li>
         </ul>
         <div class="nav-profile">
             <form action="{{ route('films.search') }}" method="GET" style="display: flex; gap: 10px;">
@@ -409,28 +411,25 @@
                     </form>
                 </div>
             @else
-                <div style="display: flex; gap: 10px; width: auto;">
+                <div style="display: flex; gap: 10px;">
                     <a href="{{ route('login') }}" style="padding: 10px 20px; background: linear-gradient(135deg, #00d4d4, #00a8a8); color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 13px; display: inline-block;">Login</a>
                     <a href="{{ route('register') }}" style="padding: 10px 20px; background: linear-gradient(135deg, #e94b3c, #d63a2a); color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 13px; display: inline-block;">Register</a>
                 </div>
             @endauth
         </div>
     </nav>
-
     <!-- ============ MAIN CONTENT ============ -->
     <main>
         @yield('content')
     </main>
-
-
     <!-- ============ FOOTER ============ -->
-    <footer id="contact">
+    <footer>
         <p>&copy; 2024 FlixPlay. All rights reserved.</p>
         <p>Platform streaming premium untuk hiburan Anda</p>
         <div class="footer-links">
             <a href="{{ route('home') }}">Beranda</a>
             <a href="{{ route('films.index') }}">Film</a>
-            <a href="#contact">Kontak</a>
+            <a href="{{ route('contact') }}">Contact</a>
             <a href="#privacy">Privasi</a>
         </div>
     </footer>
