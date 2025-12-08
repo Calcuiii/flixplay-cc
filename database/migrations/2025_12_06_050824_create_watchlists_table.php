@@ -10,16 +10,12 @@ return new class extends Migration
     {
         Schema::create('watchlists', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('film_id')->constrained('films')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('film_id')->constrained()->onDelete('cascade');
             $table->timestamps();
             
-            // Unique constraint
+            // Prevent duplicate entries
             $table->unique(['user_id', 'film_id']);
-            
-            // Indexes
-            $table->index('user_id');
-            $table->index('film_id');
         });
     }
 

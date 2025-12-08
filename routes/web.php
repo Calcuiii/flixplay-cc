@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminFilmController;
 use App\Http\Controllers\Admin\AdminGenreController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\WatchlistController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -68,3 +69,24 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
+// Protected Routes - PERLU LOGIN
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::post('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
+    
+    // Watch film
+    Route::post('/films/{film}/watch', [FilmController::class, 'watch'])->name('films.watch');
+    
+    // ✅ WATCHLIST ROUTES
+    Route::get('/watchlist', [WatchlistController::class, 'index'])->name('watchlist.index');
+    Route::post('/watchlist/{film}', [WatchlistController::class, 'store'])->name('watchlist.store');
+    Route::delete('/watchlist/{film}', [WatchlistController::class, 'destroy'])->name('watchlist.destroy');
+    Route::post('/watchlist/clear', [WatchlistController::class, 'clear'])->name('watchlist.clear');
+    
+    // Subscription routes
+    Route::get('/subscription/plans', [SubscriptionController::class, 'plans'])->name('subscription.plans');
+    // ... routes lainnya
+});
