@@ -80,4 +80,19 @@ class User extends Authenticatable
     {
         return $this->is_admin;
     }
-}
+        public function watchlists()
+    {
+        return $this->hasMany(Watchlist::class);
+    }
+
+    public function watchlistFilms()
+    {
+        return $this->belongsToMany(Film::class, 'watchlists');
+    }
+
+    // Helper method untuk cek film ada di watchlist
+    public function hasInWatchlist($filmId)
+    {
+        return $this->watchlists()->where('film_id', $filmId)->exists();
+    }
+    }

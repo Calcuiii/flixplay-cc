@@ -395,11 +395,16 @@
                 <input type="text" name="q" class="search-box" placeholder="Cari konten..." required>
             </form>
             @auth
-                <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="display: flex; gap: 15px; align-items: center;">
                     <a href="{{ route('dashboard') }}" style="color: #e5e5e5; text-decoration: none; font-size: 14px; transition: all 0.3s;" onmouseover="this.style.color='#e94b3c'" onmouseout="this.style.color='#e5e5e5'">Dashboard</a>
                     
-                    <a href="{{ route('watch-history.index') }}" style="color: #e5e5e5; text-decoration: none; font-size: 14px; transition: all 0.3s;" onmouseover="this.style.color='#e94b3c'" onmouseout="this.style.color='#e5e5e5'">Riwayat</a>
+                    <!-- WATCHLIST LINK - LEBIH MENCOLOK -->
+                    <a href="{{ route('watchlist.index') }}" style="color: #e5e5e5; text-decoration: none; font-size: 14px; font-weight: bold; transition: all 0.3s; padding: 8px 15px; background: rgba(233, 75, 60, 0.2); border-radius: 15px;" onmouseover="this.style.background='rgba(233, 75, 60, 0.3)'" onmouseout="this.style.background='rgba(233, 75, 60, 0.2)'">
+                        📋 Watchlist
+                    </a>
                     
+                    <a href="{{ route('watch-history.index') }}" style="color: #e5e5e5; text-decoration: none; font-size: 14px; transition: all 0.3s;" onmouseover="this.style.color='#e94b3c'" onmouseout="this.style.color='#e5e5e5'">Riwayat</a>
+                                
                     <!-- ADMIN LINK -->
                     @if(auth()->user()->is_admin)
                         <a href="{{ route('admin.dashboard') }}" style="color: #e5e5e5; text-decoration: none; font-size: 14px; transition: all 0.3s;" onmouseover="this.style.color='#e94b3c'" onmouseout="this.style.color='#e5e5e5'">⚙️ Admin</a>

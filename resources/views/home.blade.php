@@ -46,7 +46,32 @@
                         <a href="{{ route('films.show', $film) }}" class="icon-btn" style="text-decoration: none;">
                             <i class="bi bi-play-fill"></i>
                         </a>
-                        <button class="icon-btn"><i class="bi bi-plus"></i></button>
+                        
+                        @auth
+                            @if(auth()->user()->hasInWatchlist($film->id))
+                                <!-- Film sudah ada di watchlist -->
+                                <form action="{{ route('watchlist.destroy', $film) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="icon-btn" style="background: linear-gradient(135deg, #4CAF50, #45a049);" title="Hapus dari Watchlist">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                </form>
+                            @else
+                                <!-- Tambah ke watchlist -->
+                                <form action="{{ route('watchlist.store', $film) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="icon-btn" title="Tambah ke Watchlist">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </form>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}" class="icon-btn" title="Login untuk menambah ke Watchlist">
+                                <i class="bi bi-plus"></i>
+                            </a>
+                        @endauth
+                        
                         <button class="icon-btn"><i class="bi bi-hand-thumbs-up"></i></button>
                     </div>
                 </div>
@@ -83,7 +108,32 @@
                         <a href="{{ route('films.show', $film) }}" class="icon-btn" style="text-decoration: none;">
                             <i class="bi bi-play-fill"></i>
                         </a>
-                        <button class="icon-btn"><i class="bi bi-plus"></i></button>
+                        
+                        @auth
+                            @if(auth()->user()->hasInWatchlist($film->id))
+                                <!-- Film sudah ada di watchlist -->
+                                <form action="{{ route('watchlist.destroy', $film) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="icon-btn" style="background: linear-gradient(135deg, #4CAF50, #45a049);" title="Hapus dari Watchlist">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                </form>
+                            @else
+                                <!-- Tambah ke watchlist -->
+                                <form action="{{ route('watchlist.store', $film) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="icon-btn" title="Tambah ke Watchlist">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </form>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}" class="icon-btn" title="Login untuk menambah ke Watchlist">
+                                <i class="bi bi-plus"></i>
+                            </a>
+                        @endauth
+                        
                         <button class="icon-btn"><i class="bi bi-hand-thumbs-up"></i></button>
                     </div>
                 </div>
