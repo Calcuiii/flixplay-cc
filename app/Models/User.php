@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,7 +27,8 @@ class User extends Authenticatable
         'subscription_expires_at' => 'datetime',
     ];
 
-    public function watchHistory()
+    // ✅ UBAH DARI watchHistory() ke watchHistories() (PLURAL)
+    public function watchHistories()
     {
         return $this->hasMany(WatchHistory::class);
     }
@@ -46,9 +46,10 @@ class User extends Authenticatable
             ->first();
     }
 
+    // ✅ UPDATE METHOD INI (gunakan watchHistories)
     public function hasWatched($filmId)
     {
-        return $this->watchHistory()->where('film_id', $filmId)->exists();
+        return $this->watchHistories()->where('film_id', $filmId)->exists();
     }
 
     public function isSubscribed()
@@ -58,12 +59,10 @@ class User extends Authenticatable
         if ($active) {
             return true;
         }
-
         // Fallback ke subscription_expires_at
         if (!$this->subscription_expires_at) {
             return false;
         }
-
         return $this->subscription_expires_at->isFuture();
     }
 
@@ -72,7 +71,6 @@ class User extends Authenticatable
         if ($this->isSubscribed()) {
             return 'active';
         }
-
         return 'expired';
     }
 
@@ -80,7 +78,8 @@ class User extends Authenticatable
     {
         return $this->is_admin;
     }
-        public function watchlists()
+
+    public function watchlists()
     {
         return $this->hasMany(Watchlist::class);
     }
@@ -95,4 +94,46 @@ class User extends Authenticatable
     {
         return $this->watchlists()->where('film_id', $filmId)->exists();
     }
+
+    /**
+     * Cek apakah user sudah pernah menonton film sampai selesai
+     */
+    public function hasWatchedComplete($filmId)
+    {
+        return $this->watchHistories()
+            ->where('film_id', $filmId)
+            ->where('is_completed', true)
+            ->exists();
     }
+
+    /**
+     * Cek apakah user bisa menonton film
+     * (belum pernah nonton atau masih ada subscription aktif)
+     */
+    public function canWatchFilm($filmId)
+    {
+        // Jika belum pernah nonton sama sekali, boleh
+        $hasWatched = $this->hasWatchedComplete($filmId);
+        
+        if (!$hasWatched) {
+            return true;
+        }
+        
+        // Jika sudah pernah nonton, cek subscription
+        // Hanya user dengan subscription aktif yang bisa nonton ulang
+        return $this->hasActiveSubscription();
+    }
+
+    /**
+     * Cek apakah user punya subscription aktif
+     */
+    public function hasActiveSubscription()
+    {
+        if (!$this->subscription) {
+            return false;
+        }
+        
+        return $this->subscription->status === 'active' 
+            && $this->subscription->ends_at > now();
+    }
+}

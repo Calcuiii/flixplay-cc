@@ -82,11 +82,16 @@ Route::middleware('auth')->group(function () {
     
     // ✅ WATCHLIST ROUTES
     Route::get('/watchlist', [WatchlistController::class, 'index'])->name('watchlist.index');
+    Route::post('/watchlist/clear', [WatchlistController::class, 'clear'])->name('watchlist.clear'); 
     Route::post('/watchlist/{film}', [WatchlistController::class, 'store'])->name('watchlist.store');
     Route::delete('/watchlist/{film}', [WatchlistController::class, 'destroy'])->name('watchlist.destroy');
-    Route::post('/watchlist/clear', [WatchlistController::class, 'clear'])->name('watchlist.clear');
     
     // Subscription routes
     Route::get('/subscription/plans', [SubscriptionController::class, 'plans'])->name('subscription.plans');
-    // ... routes lainnya
+
+    Route::middleware('auth')->group(function () {
+    
+    // Watch film routes
+    Route::post('/films/{film}/watch', [FilmController::class, 'watch'])->name('films.watch');
+});
 });

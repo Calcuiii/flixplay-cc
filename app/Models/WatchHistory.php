@@ -9,25 +9,23 @@ class WatchHistory extends Model
 {
     use HasFactory;
 
-    protected $table = 'watch_history';
-
     protected $fillable = [
         'user_id',
         'film_id',
-        'watched_at',
+        'last_watched_at',
+        'is_completed', // ✅ TAMBAHKAN
     ];
 
     protected $casts = [
-        'watched_at' => 'datetime',
+        'last_watched_at' => 'datetime',
+        'is_completed' => 'boolean', // ✅ TAMBAHKAN
     ];
 
-    // Relationship to User
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relationship to Film
     public function film()
     {
         return $this->belongsTo(Film::class);
