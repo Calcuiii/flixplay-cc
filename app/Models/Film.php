@@ -18,17 +18,20 @@ class Film extends Model
         'release_year',
         'director',
         'poster_url',
+        'backdrop_url',
         'video_url',
         'rating',
         'is_featured',
         'status',
         'is_trending',  
-        'is_popular',     
+        'is_popular',  
+        'is_hero',   
     ];
 
     protected $casts = [
         'is_featured' => 'boolean',
         'rating' => 'float',
+        'is_hero' => 'boolean',
     ];
 
     // Relationship

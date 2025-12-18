@@ -9,7 +9,16 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        // Film Featured - kalau kosong, ambil 3 film terbaru
+        // ✅ Hero Films - untuk slider utama (pakai backdrop)
+        $heroFilms = Film::where('is_hero', true)
+            ->where('status', 'published')
+            ->whereNotNull('backdrop_url')  // Harus ada backdrop
+            ->with('genre')
+            ->orderByDesc('rating')
+            ->limit(5)
+            ->get();
+        
+        // Featured Films
         $featuredFilms = Film::where('is_featured', true)
             ->where('status', 'published')
             ->with('genre')
@@ -24,7 +33,7 @@ class HomeController extends Controller
                 ->get();
         }
         
-        // Film Trending - kalau kosong, ambil berdasarkan rating tertinggi
+        // Trending Films
         $trendingFilms = Film::where('is_trending', true)
             ->where('status', 'published')
             ->with('genre')
@@ -40,7 +49,7 @@ class HomeController extends Controller
                 ->get();
         }
         
-        // Film Popular - kalau kosong, ambil berdasarkan rating
+        // Popular Films
         $popularFilms = Film::where('is_popular', true)
             ->where('status', 'published')
             ->with('genre')
@@ -59,6 +68,7 @@ class HomeController extends Controller
         $genres = Genre::all();
         
         return view('home', [
+            'heroFilms' => $heroFilms,  // ✅ Tambahkan
             'featuredFilms' => $featuredFilms,
             'trendingFilms' => $trendingFilms,
             'popularFilms' => $popularFilms,
