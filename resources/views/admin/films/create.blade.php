@@ -46,6 +46,20 @@
         @error('poster_url') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
     <div class="form-group">
+        <label>Poster Image (Vertikal)</label>
+        <input type="file" name="poster_url" accept="image/*" required>
+        <small style="color: #b0b0b0;">Untuk thumbnail film (format portrait/vertikal)</small>
+        @error('poster_url') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
+    </div>
+
+    <!-- Backdrop Image (Horizontal) - NEW -->
+    <div class="form-group">
+        <label>Backdrop Image (Horizontal/Landscape)</label>
+        <input type="file" name="backdrop_url" accept="image/*">
+        <small style="color: #b0b0b0;">Untuk hero slider (format landscape/horizontal, minimal 1920x800px) - Opsional</small>
+        @error('backdrop_url') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
+    </div>
+    <div class="form-group">
         <label>URL Video</label>
         <input type="url" name="video_url" value="{{ old('video_url') }}">
         @error('video_url') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
@@ -87,6 +101,16 @@
             <input type="checkbox" name="is_popular" value="1" {{ old('is_popular') ? 'checked' : '' }}>
             Film Populer
         </label>
+    </div>
+    <!-- ✅ CHECKBOX: Hero Slider -->
+    <div class="form-group">
+        <label>
+            <input type="checkbox" name="is_hero" value="1" {{ old('is_hero') ? 'checked' : '' }}>
+            🎬 Tampilkan di Hero Slider (Home)
+        </label>
+        <small style="display: block; color: #b0b0b0; margin-top: 5px;">
+            Film ini akan muncul di slider besar di homepage (perlu backdrop image)
+        </small>
     </div>
     
     <div style="display: flex; gap: 10px;">

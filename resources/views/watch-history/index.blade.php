@@ -40,7 +40,7 @@
                             ⭐ {{ number_format($history->film->rating, 1) }}/10
                         </div>
                         <div style="color: #b0b0b0; font-size: 11px;">
-                            Ditonton: {{ $history->watched_at->format('d M Y H:i') }}
+                            Ditonton: {{ $history->last_watched_at->format('d M Y H:i') }} 
                         </div>
                     </div>
                     

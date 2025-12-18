@@ -58,6 +58,19 @@
         <small style="color: #b0b0b0;">Kosongkan jika tidak ingin mengubah</small>
         @error('poster_url') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
+
+    <!-- Backdrop Image (Horizontal) - NEW -->
+    <div class="form-group">
+        <label>Backdrop Image (Horizontal/Landscape)</label>
+        @if($film->backdrop_url)
+            <div style="margin-bottom: 10px;">
+                <img src="{{ asset($film->backdrop_url) }}" alt="Current Backdrop" style="max-width: 400px; border-radius: 8px;">
+            </div>
+        @endif
+        <input type="file" name="backdrop_url" accept="image/*">
+        <small style="color: #b0b0b0;">Untuk hero slider (format landscape) - Kosongkan jika tidak ingin mengubah</small>
+        @error('backdrop_url') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
+    </div>
     
     <div class="form-group">
         <label>URL Video</label>
@@ -107,7 +120,18 @@
             Film Populer
         </label>
     </div>
-    
+    <!-- ✅ CHECKBOX: Hero Slider -->
+    <div class="form-group">
+        <label>
+            <input type="checkbox" name="is_hero" value="1" 
+                {{ old('is_hero', $film->is_hero) ? 'checked' : '' }}>
+            🎬 Tampilkan di Hero Slider (Home)
+        </label>
+        <small style="display: block; color: #b0b0b0; margin-top: 5px;">
+            Film ini akan muncul di slider besar di homepage
+        </small>
+    </div>
+        
     <div style="display: flex; gap: 10px;">
         <button type="submit" class="btn btn-primary">
             💾 Update

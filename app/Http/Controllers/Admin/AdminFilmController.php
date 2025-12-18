@@ -33,6 +33,7 @@ class AdminFilmController extends Controller
             'duration' => 'required|integer|min:1|max:600',
             'director' => 'required|string|max:255',
             'poster_url' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'backdrop_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',  // ✅ Tambahkan
             'video_url' => 'nullable|url',
             'rating' => 'nullable|numeric|min:0|max:10',
             'status' => 'required|in:draft,published,archived',
@@ -45,10 +46,18 @@ class AdminFilmController extends Controller
             $validated['poster_url'] = '/storage/' . $path;
         }
 
+        // ✅ Handle backdrop upload (NEW)
+        if ($request->hasFile('backdrop_url')) {
+            $file = $request->file('backdrop_url');
+            $path = $file->store('backdrops', 'public');
+            $validated['backdrop_url'] = '/storage/' . $path;
+        }
+
         // ✅ Handle checkboxes
         $validated['is_featured'] = $request->has('is_featured');
         $validated['is_trending'] = $request->has('is_trending');
         $validated['is_popular'] = $request->has('is_popular');
+        $validated['is_hero'] = $request->has('is_hero');  // ✅ Tambahkan
 
         Film::create($validated);
 
@@ -72,14 +81,14 @@ class AdminFilmController extends Controller
             'release_year' => 'required|integer|min:1900|max:' . date('Y'),
             'director' => 'required|string|max:255',
             'poster_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'backdrop_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',  // ✅ Tambahkan
             'video_url' => 'nullable|url',
             'rating' => 'nullable|numeric|min:0|max:10',
             'status' => 'required|in:draft,published,archived',
         ]);
 
-        // ✅ Handle poster upload (jika ada file baru)
+        // ✅ Handle poster upload
         if ($request->hasFile('poster_url')) {
-            // Hapus poster lama jika ada
             if ($film->poster_url && file_exists(public_path($film->poster_url))) {
                 unlink(public_path($film->poster_url));
             }
@@ -88,14 +97,27 @@ class AdminFilmController extends Controller
             $path = $file->store('posters', 'public');
             $validated['poster_url'] = '/storage/' . $path;
         } else {
-            // Jangan update poster_url jika tidak ada file baru
             unset($validated['poster_url']);
+        }
+
+        // ✅ Handle backdrop upload (NEW)
+        if ($request->hasFile('backdrop_url')) {
+            if ($film->backdrop_url && file_exists(public_path($film->backdrop_url))) {
+                unlink(public_path($film->backdrop_url));
+            }
+            
+            $file = $request->file('backdrop_url');
+            $path = $file->store('backdrops', 'public');
+            $validated['backdrop_url'] = '/storage/' . $path;
+        } else {
+            unset($validated['backdrop_url']);
         }
 
         // ✅ Handle checkboxes
         $validated['is_featured'] = $request->has('is_featured');
         $validated['is_trending'] = $request->has('is_trending');
         $validated['is_popular'] = $request->has('is_popular');
+        $validated['is_hero'] = $request->has('is_hero');  // ✅ Tambahkan
 
         $film->update($validated);
 
