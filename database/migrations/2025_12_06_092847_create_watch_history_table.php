@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('film_id')->constrained('films')->onDelete('cascade');
             $table->timestamp('watched_at')->useCurrent();
             $table->timestamps();
+            $table->timestamp('last_watched_at')->nullable();
             
             // User hanya bisa punya 1 watch record per film
             $table->unique(['user_id', 'film_id']);

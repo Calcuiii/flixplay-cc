@@ -45,12 +45,6 @@
         <input type="file" name="poster_url" accept="image/*">
         @error('poster_url') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
     </div>
-    <div class="form-group">
-        <label>Poster Image (Vertikal)</label>
-        <input type="file" name="poster_url" accept="image/*" required>
-        <small style="color: #b0b0b0;">Untuk thumbnail film (format portrait/vertikal)</small>
-        @error('poster_url') <span style="color: #e94b3c;">{{ $message }}</span> @enderror
-    </div>
 
     <!-- Backdrop Image (Horizontal) - NEW -->
     <div class="form-group">

@@ -31,7 +31,7 @@
 
                 <!-- Features -->
                 <ul style="list-style: none; margin-bottom: 30px; padding: 0;">
-                    @foreach($plan->features as $feature)
+                    @foreach(json_decode($plan->features, true) as $feature)
                         <li style="color: #e5e5e5; padding: 8px 0; border-bottom: 1px solid rgba(233, 75, 60, 0.1); font-size: 14px;">
                             ✅ {{ $feature }}
                         </li>
