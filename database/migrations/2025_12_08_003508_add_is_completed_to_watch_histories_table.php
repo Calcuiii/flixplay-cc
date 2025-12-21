@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('watch_histories', function (Blueprint $table) {
             if (!Schema::hasColumn('watch_histories', 'is_completed')) {
-                $table->boolean('is_completed')->default(false)->after('last_watched_at');
+                $table->boolean('is_completed')->default(false);
             }
         });
     }

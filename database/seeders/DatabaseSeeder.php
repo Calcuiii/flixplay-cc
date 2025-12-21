@@ -8,10 +8,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Urutan penting! Genre harus dibuat duluan karena Film mereferensikan Genre
         $this->call([
             GenreSeeder::class,
             UserSeeder::class,
+            SubscriptionPlanSeeder::class,
             FilmSeeder::class,
         ]);
     }
