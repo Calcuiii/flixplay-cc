@@ -7,6 +7,9 @@ use App\Models\SubscriptionPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Midtrans\Snap;
+use Midtrans\Config;
+
 
 class PaymentController extends Controller
 {
@@ -28,14 +31,32 @@ class PaymentController extends Controller
         $user = Auth::user();
 
         if (!$user) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu');
+            return redirect()->route('login');
         }
 
-        // Generate order ID
+        if ((int)$plan->price === 0) {
+            Subscription::create([
+                'user_id' => $user->id,
+                'subscription_plan_id' => $plan->id,
+                'status' => 'completed',
+                'started_at' => now(),
+                'expires_at' => now()->addDays($plan->duration_days),
+                'amount' => 0,
+            ]);
+
+            return redirect()->route('subscription.success')
+                ->with('success', 'Berhasil menggunakan paket Free');
+        }
+
+        // 🔐 Konfigurasi Midtrans
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+
         $orderId = 'ORDER-' . $user->id . '-' . time();
 
-        // Create subscription record dengan status pending
-        $subscription = Subscription::create([
+        Subscription::create([
             'user_id' => $user->id,
             'subscription_plan_id' => $plan->id,
             'status' => 'pending',
@@ -43,11 +64,10 @@ class PaymentController extends Controller
             'amount' => $plan->price,
         ]);
 
-        // Prepare data untuk Midtrans
-        $transactionData = [
+        $params = [
             'transaction_details' => [
                 'order_id' => $orderId,
-                'gross_amount' => (int)$plan->price,
+                'gross_amount' => (int) $plan->price,
             ],
             'customer_details' => [
                 'first_name' => $user->name,
@@ -56,51 +76,18 @@ class PaymentController extends Controller
             'item_details' => [
                 [
                     'id' => $plan->id,
-                    'price' => (int)$plan->price,
+                    'price' => (int) $plan->price,
                     'quantity' => 1,
                     'name' => 'Subscription ' . $plan->name,
                 ]
             ],
-            'callbacks' => [
-                'finish' => route('payment.finish'),
-                'error' => route('payment.error'),
-                'pending' => route('payment.pending'),
-            ],
         ];
 
-        try {
-            // Request ke Midtrans API
-            $curl = curl_init();
-            curl_setopt_array($curl, [
-                CURLOPT_URL => $this->snapUrl,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => json_encode($transactionData),
-                CURLOPT_HTTPHEADER => [
-                    'Content-Type: application/json',
-                    'Authorization: Basic ' . base64_encode($this->serverKey . ':'),
-                ],
-            ]);
+        $snapToken = Snap::getSnapToken($params);
 
-            $response = curl_exec($curl);
-            curl_close($curl);
-
-            $responseData = json_decode($response, true);
-
-            if (isset($responseData['token'])) {
-                return redirect($responseData['redirect_url']);
-            } else {
-                return redirect()->route('subscription.plans')->with('error', 'Gagal membuat transaksi');
-            }
-        } catch (\Exception $e) {
-            return redirect()->route('subscription.plans')->with('error', 'Error: ' . $e->getMessage());
-        }
+        return redirect("https://app.sandbox.midtrans.com/snap/v4/redirection/$snapToken");
     }
+
 
     // Callback dari Midtrans (setelah user selesai payment)
     public function callback(Request $request)
