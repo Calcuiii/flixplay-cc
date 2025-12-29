@@ -40,7 +40,6 @@ class PaymentController extends Controller
                 'subscription_plan_id' => $plan->id,
                 'status' => 'completed',
                 'started_at' => now(),
-                'expires_at' => now()->addDays($plan->duration_days),
                 'amount' => 0,
             ]);
 
@@ -56,15 +55,24 @@ class PaymentController extends Controller
 
         $orderId = 'ORDER-' . $user->id . '-' . time();
 
-        Subscription::create([
+        $expiresAt = now()->addDays($plan->duration_days);
+
+        $subscription = Subscription::create([
             'user_id' => $user->id,
             'subscription_plan_id' => $plan->id,
-            'status' => 'pending',
-            'midtrans_order_id' => $orderId,
-            'amount' => $plan->price,
+            'status' => 'completed',
+            'started_at' => now(),
+            'expires_at' => $expiresAt,
+            'amount' => 0,
         ]);
 
-        $params = [
+        $user->update([
+            'subscription_status' => 'premium',
+            'premium_expires_at' => $expiresAt,
+        ]);
+
+
+       $params = [
             'transaction_details' => [
                 'order_id' => $orderId,
                 'gross_amount' => (int) $plan->price,
@@ -81,11 +89,16 @@ class PaymentController extends Controller
                     'name' => 'Subscription ' . $plan->name,
                 ]
             ],
+            'callbacks' => [
+                'finish' => route('payment.finish'),
+            ],
         ];
+
 
         $snapToken = Snap::getSnapToken($params);
 
         return redirect("https://app.sandbox.midtrans.com/snap/v4/redirection/$snapToken");
+        
     }
 
 
@@ -95,39 +108,45 @@ class PaymentController extends Controller
         $orderId = $request->input('order_id');
         $statusCode = $request->input('status_code');
         $transactionStatus = $request->input('transaction_status');
-        $serverKey = $this->serverKey;
+        $grossAmount = $request->input('gross_amount');
+        $serverKey = config('midtrans.server_key');
 
-        // Verify signature dari Midtrans
-        $signature = hash('sha512', $orderId . $statusCode . $request->input('gross_amount') . $serverKey);
+        // Verify signature
+        $signature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
 
         if ($signature !== $request->input('signature_key')) {
             return response()->json(['message' => 'Invalid signature'], 403);
         }
 
-        // Find subscription by order ID
         $subscription = Subscription::where('midtrans_order_id', $orderId)->first();
 
         if (!$subscription) {
             return response()->json(['message' => 'Subscription not found'], 404);
         }
 
-        // Update subscription status berdasarkan payment status
-        if ($transactionStatus === 'capture' || $transactionStatus === 'settlement') {
-            // Payment berhasil
+        // 🔒 Prevent double processing
+        if ($subscription->status === 'completed') {
+            return response()->json(['message' => 'Already processed']);
+        }
+
+        if (in_array($transactionStatus, ['capture', 'settlement'])) {
+
+             $expiresAt = now()->addDays($subscription->plan->duration_days);
+
             $subscription->update([
                 'status' => 'completed',
                 'transaction_id' => $request->input('transaction_id'),
                 'started_at' => now(),
-                'expires_at' => now()->addDays($subscription->plan->duration_days),
+                'expires_at' => $expiresAt,
             ]);
 
-            // Update user subscription
             $user = $subscription->user;
             $user->update([
-                'subscription_type' => $subscription->plan->name,
-                'subscription_expires_at' => $subscription->expires_at,
+                'subscription_status' => 'premium',
+                'premium_expires_at' => $expiresAt,
             ]);
-        } elseif ($transactionStatus === 'deny' || $transactionStatus === 'cancel') {
+
+        } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
             $subscription->update(['status' => 'failed']);
         } elseif ($transactionStatus === 'pending') {
             $subscription->update(['status' => 'pending']);
@@ -139,15 +158,12 @@ class PaymentController extends Controller
     // Finish payment (user klik "Selesai" di payment gateway)
     public function finish(Request $request)
     {
-        $orderId = $request->input('order_id');
-        $subscription = Subscription::where('midtrans_order_id', $orderId)->first();
-
-        if ($subscription && $subscription->status === 'completed') {
-            return redirect()->route('subscription.success')->with('success', 'Pembayaran berhasil! Subscription Anda sudah aktif.');
-        } else {
-            return redirect()->route('subscription.failed')->with('error', 'Pembayaran sedang diproses atau gagal.');
-        }
+        return redirect()->route('subscription.success')
+            ->with('success', 'Pembayaran berhasil.');
     }
+
+
+
 
     public function error(Request $request)
     {

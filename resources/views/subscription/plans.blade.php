@@ -30,14 +30,19 @@
                 </div>
 
                 <!-- Features -->
+                @php
+                    $features = is_array($plan->features)
+                        ? $plan->features
+                        : json_decode($plan->features, true);
+                @endphp
+
                 <ul style="list-style: none; margin-bottom: 30px; padding: 0;">
-                    @foreach($plan->features as $feature)
+                    @foreach($features ?? [] as $feature)
                         <li style="color: #e5e5e5; padding: 8px 0; border-bottom: 1px solid rgba(233, 75, 60, 0.1); font-size: 14px;">
                             ✅ {{ $feature }}
                         </li>
                     @endforeach
                 </ul>
-
                 <!-- Button -->
                 <a href="{{ route('subscription.checkout', $plan) }}" style="display: block; text-align: center; padding: 12px 30px; background: linear-gradient(135deg, #e94b3c, #d63a2a); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; transition: all 0.3s; box-shadow: 0 0 20px rgba(233, 75, 60, 0.4);">
                     Pilih Paket Ini

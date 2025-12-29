@@ -65,7 +65,6 @@
                                     <i class="bi bi-x"></i>
                                 </button>
                             </form>
-                            <button class="icon-btn"><i class="bi bi-hand-thumbs-up"></i></button>
                         </div>
                     </div>
                 </div>
