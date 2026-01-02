@@ -22,9 +22,9 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 # --- BAGIAN 3: PEMBERSIHAN CACHE (TAMBAHAN PENTING) ---
 # ### TAMBAHAN BARU: Wajib dijalankan setelah edit Middleware/Controller agar tidak Error 500 ###
 # cd /var/www/html
-# php artisan optimize:clear
-# php artisan view:clear
-# php artisan config:clear
+php artisan optimize:clear
+php artisan view:clear
+php artisan config:clear
 
 
 # --- BAGIAN 4: SETUP APLIKASI (Punya Anda) ---
